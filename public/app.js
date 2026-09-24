@@ -2,6 +2,7 @@ const form = document.getElementById('chat-form');
 const promptInput = document.getElementById('prompt');
 const messages = document.getElementById('messages');
 const status = document.getElementById('status');
+let backendReady = false;
 
 const conversation = [
   {
@@ -11,9 +12,15 @@ const conversation = [
 ];
 
 renderMessages();
+checkBackendAvailability();
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
+
+  if (!backendReady) {
+    setBusy(false, 'Backend unavailable in this deployment.');
+    return;
+  }
 
   const prompt = promptInput.value.trim();
   if (!prompt) {
@@ -45,6 +52,21 @@ form.addEventListener('submit', async (event) => {
     setBusy(false, error instanceof Error ? error.message : 'Request failed.');
   }
 });
+
+async function checkBackendAvailability() {
+  try {
+    const response = await fetch('/api/health');
+    backendReady = response.ok;
+  } catch {
+    backendReady = false;
+  }
+
+  if (!backendReady) {
+    form.querySelector('button').disabled = true;
+    promptInput.disabled = true;
+    status.textContent = 'GitHub Pages preview only. Backend is not deployed here.';
+  }
+}
 
 function renderMessages() {
   messages.innerHTML = conversation
