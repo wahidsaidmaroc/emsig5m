@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMSI G5 MAARIF Chatbot</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">RAG chatbot MVP</p>
+        <h1>Simple answers from your own docs.</h1>
+        <p class="lede">A minimal Node.js chatbot that retrieves local knowledge before calling the model.</p>
+      </section>
+
+      <section class="card">
+        <div id="messages" class="messages" aria-live="polite"></div>
+
+        <form id="chat-form" class="composer">
+          <textarea id="prompt" rows="2" placeholder="Ask something about the knowledge base..."></textarea>
+          <button type="submit">Send</button>
+        </form>
+
+        <p id="status" class="status">Ready.</p>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
