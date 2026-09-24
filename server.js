@@ -50,6 +50,7 @@ const defaultSettings = {
   },
   security: {
     passwordHash: '',
+    passwordSalt: '',
   },
 };
 
@@ -162,6 +163,7 @@ function normalizeSettings(payload, previousSettings) {
   const data = isObject(incoming.data) ? incoming.data : {};
 
   const password = typeof profile.password === 'string' ? profile.password.trim() : '';
+  const hashedPassword = password ? hashPassword(password) : null;
 
   return {
     profile: {
@@ -191,7 +193,8 @@ function normalizeSettings(payload, previousSettings) {
       privacyPolicyUrl: cleanString(data.privacyPolicyUrl) || previous.data.privacyPolicyUrl,
     },
     security: {
-      passwordHash: password ? hashPassword(password) : previous.security.passwordHash,
+      passwordHash: hashedPassword ? hashedPassword.hash : previous.security.passwordHash,
+      passwordSalt: hashedPassword ? hashedPassword.salt : previous.security.passwordSalt,
     },
   };
 }
@@ -202,6 +205,7 @@ function normalizeInternalSettings(value) {
     ...normalized,
     security: {
       passwordHash: isObject(value?.security) && typeof value.security.passwordHash === 'string' ? value.security.passwordHash : '',
+      passwordSalt: isObject(value?.security) && typeof value.security.passwordSalt === 'string' ? value.security.passwordSalt : '',
     },
   };
 }
@@ -242,7 +246,9 @@ function toPublicSettings(value) {
 }
 
 function hashPassword(value) {
-  return crypto.createHash('sha256').update(value).digest('hex');
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.pbkdf2Sync(value, salt, 310000, 32, 'sha256').toString('hex');
+  return { hash, salt };
 }
 
 function cleanString(value) {
