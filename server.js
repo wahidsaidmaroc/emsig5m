@@ -72,6 +72,12 @@ app.post('/api/chat', async (request, response) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Chatbot running on http://localhost:${port}`);
-});
+const isDirectExecution = process.argv[1] && path.resolve(process.argv[1]) === __filename;
+
+if (isDirectExecution) {
+  app.listen(port, () => {
+    console.log(`Chatbot running on http://localhost:${port}`);
+  });
+}
+
+export default app;

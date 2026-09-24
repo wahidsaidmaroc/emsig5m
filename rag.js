@@ -55,6 +55,8 @@ export async function retrieveContext(client, index, query, limit = 4) {
     .slice(0, limit);
 }
 
+export { splitText, cosineSimilarity };
+
 async function listFiles(rootDir) {
   const entries = await fs.readdir(rootDir, { withFileTypes: true }).catch(() => []);
   const files = [];
