@@ -1,12 +1,28 @@
 :root {
   color-scheme: light;
+  --base-font-size: 16px;
   --bg: #f3efe7;
+  --bg-elevated: rgba(255, 255, 255, 0.9);
   --panel: rgba(255, 255, 255, 0.82);
   --panel-border: rgba(15, 23, 42, 0.08);
   --text: #142033;
   --muted: #607089;
   --accent: #0f766e;
   --accent-strong: #115e59;
+  --secondary: rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f172a;
+  --bg-elevated: rgba(15, 23, 42, 0.9);
+  --panel: rgba(15, 23, 42, 0.84);
+  --panel-border: rgba(148, 163, 184, 0.16);
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #2dd4bf;
+  --accent-strong: #14b8a6;
+  --secondary: rgba(148, 163, 184, 0.12);
   --assistant-bg: rgba(255, 255, 255, 0.9);
   --assistant-border: rgba(15, 23, 42, 0.08);
   --composer-bg: rgba(255, 255, 255, 0.92);
@@ -24,6 +40,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  font-size: var(--base-font-size);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text);
   background:
@@ -32,6 +49,11 @@ body {
     linear-gradient(180deg, #fffdfa 0%, var(--bg) 100%);
 }
 
+body.animations-disabled *,
+body.animations-disabled *::before,
+body.animations-disabled *::after {
+  animation: none !important;
+  transition: none !important;
 body[data-theme="gemini"] {
   --bg: #eef4ff;
   --panel: rgba(255, 255, 255, 0.84);
@@ -81,12 +103,16 @@ body[data-theme="claude"] {
 }
 
 .shell {
-  width: min(920px, calc(100vw - 32px));
+  width: min(960px, calc(100vw - 32px));
   margin: 0 auto;
   padding: 56px 0 40px;
 }
 
 .hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -98,21 +124,39 @@ body[data-theme="claude"] {
   color: var(--accent-strong);
 }
 
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
 h1 {
-  margin: 0;
+  margin-bottom: 0;
   font-size: clamp(2.2rem, 5vw, 4.4rem);
   line-height: 0.98;
   letter-spacing: -0.05em;
 }
 
+h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+h3 {
+  margin-bottom: 10px;
+  font-size: 1.02rem;
+}
+
 .lede {
-  max-width: 56ch;
+  max-width: 62ch;
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 1.02rem;
 }
 
-.card {
+.card,
+.settings-panel {
   border: 1px solid var(--panel-border);
   border-radius: 24px;
   background: var(--panel);
@@ -121,6 +165,8 @@ h1 {
   overflow: hidden;
 }
 
+.chat-card {
+  margin-bottom: 20px;
 .style-picker {
   display: flex;
   flex-wrap: wrap;
@@ -197,6 +243,8 @@ h1 {
 
 .message.assistant {
   align-self: flex-start;
+  background: var(--bg-elevated);
+  border: 1px solid var(--panel-border);
   background: var(--assistant-bg);
   border: 1px solid var(--assistant-border);
   border-bottom-left-radius: 6px;
@@ -207,7 +255,14 @@ h1 {
   grid-template-columns: 1fr auto;
   gap: 12px;
   padding: 16px 18px 0;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-top: 1px solid var(--panel-border);
+}
+
+textarea,
+input,
+select,
+button {
+  font: inherit;
 }
 
 textarea {
@@ -216,20 +271,32 @@ textarea {
   border: 1px solid var(--composer-border);
   border-radius: 16px;
   padding: 14px 15px;
-  font: inherit;
   color: inherit;
+  background: var(--bg-elevated);
   background: var(--composer-bg);
 }
 
-button {
+button,
+.secondary-button {
   border: 0;
   border-radius: 16px;
   padding: 0 20px;
   background: var(--accent-strong);
   color: white;
-  font: inherit;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.secondary-button,
+button.secondary,
+.icon-button {
+  background: var(--secondary);
+  color: var(--text);
 }
 
 button:disabled {
@@ -244,12 +311,132 @@ button:disabled {
   font-size: 0.92rem;
 }
 
-@media (max-width: 640px) {
-  .shell {
-    width: min(100vw - 20px, 920px);
-    padding-top: 28px;
-  }
+.settings-panel {
+  padding: 22px;
+}
 
+.settings-form {
+  display: grid;
+  gap: 20px;
+}
+
+.settings-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-status,
+.field-hint,
+.history-meta,
+.history-empty {
+  color: var(--muted);
+  margin: 0;
+}
+
+.icon-button {
+  width: 44px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 1.2rem;
+}
+
+.settings-section {
+  padding: 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span,
+.field legend {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.field input:not([type='checkbox']),
+.field select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  padding: 10px 12px;
+  color: inherit;
+  background: var(--bg-elevated);
+}
+
+.field input[type='range'] {
+  padding: 0;
+  min-height: 0;
+  accent-color: var(--accent-strong);
+}
+
+.field-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fieldset {
+  padding: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.history-item {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--panel-border);
+}
+
+.history-item .history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.privacy-link {
+  color: var(--accent-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .hero,
+  .composer,
+  .field-grid {
   .style-picker {
     padding: 16px;
   }
@@ -266,8 +453,13 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  button {
-    min-height: 48px;
+  .hero {
+    flex-direction: column;
+  }
+
+  .shell {
+    width: min(100vw - 20px, 960px);
+    padding-top: 28px;
   }
 
   .message {
