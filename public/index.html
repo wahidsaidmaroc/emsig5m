@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,21 +9,194 @@
   <body>
     <main class="shell">
       <section class="hero">
-        <p class="eyebrow">RAG chatbot MVP</p>
-        <h1>Simple answers from your own docs.</h1>
-        <p class="lede">A minimal Node.js chatbot that retrieves local knowledge before calling the model.</p>
+        <div>
+          <p class="eyebrow">RAG chatbot MVP</p>
+          <h1>Réponses simples depuis vos propres documents.</h1>
+          <p class="lede">
+            Une interface minimaliste avec un panneau de configuration pour personnaliser le profil, l’IA, l’affichage
+            et l’historique.
+          </p>
+        </div>
+
+        <button id="open-settings" class="secondary-button" type="button">Configuration</button>
       </section>
 
-      <section class="card">
+      <section class="card chat-card">
         <div id="messages" class="messages" aria-live="polite"></div>
 
         <form id="chat-form" class="composer">
-          <textarea id="prompt" rows="2" placeholder="Ask something about the knowledge base..."></textarea>
-          <button type="submit">Send</button>
+          <textarea id="prompt" rows="2" placeholder="Posez une question sur la base de connaissances..."></textarea>
+          <button id="send-button" type="submit">Envoyer</button>
         </form>
 
-        <p id="status" class="status">Ready.</p>
+        <p id="status" class="status">Prêt.</p>
       </section>
+
+      <aside id="settings-panel" class="settings-panel" hidden aria-labelledby="settings-title">
+        <form id="settings-form" class="settings-form">
+          <div class="settings-header">
+            <div>
+              <p class="eyebrow">Configuration</p>
+              <h2 id="settings-title">Paramètres utilisateur</h2>
+            </div>
+            <button id="close-settings" type="button" class="icon-button" aria-label="Fermer la configuration">
+              ×
+            </button>
+          </div>
+
+          <p id="settings-status" class="settings-status" aria-live="polite"></p>
+
+          <section class="settings-section">
+            <h3>Profil</h3>
+            <div class="field-grid">
+              <label class="field">
+                <span>Prénom</span>
+                <input id="first-name" type="text" autocomplete="given-name" />
+              </label>
+              <label class="field">
+                <span>Nom</span>
+                <input id="last-name" type="text" autocomplete="family-name" />
+              </label>
+              <label class="field">
+                <span>Email</span>
+                <input id="email" type="email" autocomplete="email" />
+              </label>
+              <label class="field">
+                <span>Photo de profil</span>
+                <input id="avatar-url" type="url" placeholder="https://example.com/avatar.png" />
+              </label>
+              <label class="field">
+                <span>Nouveau mot de passe</span>
+                <input id="password" type="password" autocomplete="new-password" />
+                <small id="password-status" class="field-hint"></small>
+              </label>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h3>Paramètres IA</h3>
+            <div class="field-grid">
+              <label class="field">
+                <span>Modèle IA</span>
+                <select id="model">
+                  <option value="gpt-4o-mini">GPT-4o mini</option>
+                  <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4.1-mini">GPT-4.1 mini</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Température</span>
+                <input id="temperature" type="range" min="0" max="2" step="0.1" />
+              </label>
+              <label class="field">
+                <span>Longueur max des réponses</span>
+                <input id="max-response-length" type="number" min="128" max="8192" step="64" />
+              </label>
+              <label class="field">
+                <span>Langue par défaut</span>
+                <select id="language">
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Ton des réponses</span>
+                <select id="tone">
+                  <option value="professionnel">Professionnel</option>
+                  <option value="amical">Amical</option>
+                  <option value="technique">Technique</option>
+                  <option value="concise">Concis</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h3>Paramètres d’affichage</h3>
+            <div class="field-grid">
+              <label class="field">
+                <span>Thème</span>
+                <select id="theme">
+                  <option value="light">Clair</option>
+                  <option value="dark">Sombre</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Taille de police</span>
+                <input id="font-size" type="range" min="12" max="24" step="1" />
+              </label>
+              <label class="field field-inline">
+                <input id="animations" type="checkbox" />
+                <span>Activer les animations</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h3>Gestion de l’historique</h3>
+            <div class="settings-actions">
+              <button id="clear-conversation" type="button" class="secondary">Réinitialiser la conversation</button>
+              <button id="delete-conversation" type="button" class="secondary">Supprimer la conversation</button>
+              <button id="delete-all-history" type="button" class="secondary">Supprimer tout l’historique</button>
+              <button id="export-history" type="button" class="secondary">Exporter l’historique</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+          </section>
+
+          <section class="settings-section">
+            <h3>Notifications</h3>
+            <div class="field-grid">
+              <label class="field field-inline">
+                <input id="notifications-enabled" type="checkbox" />
+                <span>Activer les notifications</span>
+              </label>
+              <fieldset class="field fieldset">
+                <legend>Mode de réception</legend>
+                <label class="field-inline">
+                  <input id="notification-email" type="checkbox" />
+                  <span>Email</span>
+                </label>
+                <label class="field-inline">
+                  <input id="notification-teams" type="checkbox" />
+                  <span>Teams</span>
+                </label>
+                <label class="field-inline">
+                  <input id="notification-push" type="checkbox" />
+                  <span>Push</span>
+                </label>
+              </fieldset>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h3>Gestion des données</h3>
+            <div class="field-grid">
+              <label class="field">
+                <span>Politique de confidentialité</span>
+                <input id="privacy-policy-url" type="url" />
+              </label>
+              <div class="settings-actions">
+                <button id="download-data" type="button" class="secondary">Télécharger mes données</button>
+                <button id="delete-data" type="button" class="secondary">Supprimer mes données personnelles</button>
+              </div>
+              <a
+                id="privacy-policy-link"
+                class="privacy-link"
+                href="https://openai.com/policies/privacy-policy"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Consulter la politique de confidentialité
+              </a>
+            </div>
+          </section>
+
+          <div class="settings-footer">
+            <button type="submit">Enregistrer</button>
+          </div>
+        </form>
+      </aside>
     </main>
 
     <script src="app.js" type="module"></script>
