@@ -15,6 +15,20 @@
       </section>
 
       <section class="card">
+        <div class="style-picker" aria-labelledby="style-title">
+          <div>
+            <p class="style-picker__eyebrow">Choose a chat style</p>
+            <h2 id="style-title">Google Gemini, ChatGPT, or Claude?</h2>
+            <p class="style-picker__copy">Pick the look you want before you start chatting.</p>
+          </div>
+
+          <div class="style-picker__choices" role="group" aria-label="Chat style choices">
+            <button type="button" class="style-choice" data-theme="gemini">Google Gemini</button>
+            <button type="button" class="style-choice" data-theme="chatgpt">ChatGPT</button>
+            <button type="button" class="style-choice" data-theme="claude">Claude</button>
+          </div>
+        </div>
+
         <div id="messages" class="messages" aria-live="polite"></div>
 
         <form id="chat-form" class="composer">
