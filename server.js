@@ -8,7 +8,7 @@ import { buildIndex, retrieveContext } from './rag.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 3555);
 const openAIApiKey = process.env.OPENAI_API_KEY;
 const client = openAIApiKey ? new OpenAI({ apiKey: openAIApiKey }) : null;
 const knowledgeDir = path.join(__dirname, 'knowledge');
